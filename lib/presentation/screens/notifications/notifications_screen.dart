@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/data/models/notification_model.dart';
 import 'package:recipe_app/presentation/providers/notification_providers.dart';
+import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/screens/recipes/recipe_detail_screen.dart';
 import 'package:recipe_app/presentation/screens/events/event_detail_screen.dart';
 

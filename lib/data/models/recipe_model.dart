@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum RecipePrivacy {
   public,
   friends,
+  friendsOnly, // Alias for friends
   private,
   eventOnly,
 }
@@ -21,6 +22,9 @@ class Ingredient {
     this.isModified,
     this.modificationNote,
   });
+
+  // Alias for backward compatibility
+  String get item => name;
 
   Map<String, dynamic> toMap() {
     return {
@@ -41,6 +45,22 @@ class Ingredient {
       modificationNote: map['modificationNote'],
     );
   }
+
+  Ingredient copyWith({
+    String? name,
+    String? amount,
+    String? unit,
+    bool? isModified,
+    String? modificationNote,
+  }) {
+    return Ingredient(
+      name: name ?? this.name,
+      amount: amount ?? this.amount,
+      unit: unit ?? this.unit,
+      isModified: isModified ?? this.isModified,
+      modificationNote: modificationNote ?? this.modificationNote,
+    );
+  }
 }
 
 class RecipeStep {
@@ -57,6 +77,9 @@ class RecipeStep {
     this.isModified,
     this.modificationNote,
   });
+
+  // Alias for backward compatibility
+  int get stepNumber => order;
 
   Map<String, dynamic> toMap() {
     return {
@@ -75,6 +98,22 @@ class RecipeStep {
       imageUrl: map['imageUrl'],
       isModified: map['isModified'],
       modificationNote: map['modificationNote'],
+    );
+  }
+
+  RecipeStep copyWith({
+    int? order,
+    String? instruction,
+    String? imageUrl,
+    bool? isModified,
+    String? modificationNote,
+  }) {
+    return RecipeStep(
+      order: order ?? this.order,
+      instruction: instruction ?? this.instruction,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isModified: isModified ?? this.isModified,
+      modificationNote: modificationNote ?? this.modificationNote,
     );
   }
 }
@@ -149,6 +188,7 @@ class RecipeModifications {
 class RecipeModel {
   final String recipeId;
   final String authorId;
+  final String? authorName; // Optional, computed from UserRepository
   final String title;
   final String? description;
   final List<Ingredient> ingredients;
@@ -158,6 +198,7 @@ class RecipeModel {
   final int? cookTimeMinutes;
   final int servings;
   final String? difficulty;
+  final String? category;
   final List<String> tags;
   final List<String> dietaryTags;
   final String? originalSource;
@@ -171,9 +212,14 @@ class RecipeModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  // Computed properties for backward compatibility
+  int get prepTime => prepTimeMinutes ?? 0;
+  int get cookTime => cookTimeMinutes ?? 0;
+
   RecipeModel({
     required this.recipeId,
     required this.authorId,
+    this.authorName,
     required this.title,
     this.description,
     this.ingredients = const [],
@@ -183,6 +229,7 @@ class RecipeModel {
     this.cookTimeMinutes,
     required this.servings,
     this.difficulty,
+    this.category,
     this.tags = const [],
     this.dietaryTags = const [],
     this.originalSource,
@@ -210,6 +257,7 @@ class RecipeModel {
       'cookTimeMinutes': cookTimeMinutes,
       'servings': servings,
       'difficulty': difficulty,
+      'category': category,
       'tags': tags,
       'dietaryTags': dietaryTags,
       'originalSource': originalSource,
@@ -230,6 +278,7 @@ class RecipeModel {
     return RecipeModel(
       recipeId: doc.id,
       authorId: data['authorId'] ?? '',
+      authorName: data['authorName'], // Optional, might not be in Firestore
       title: data['title'] ?? '',
       description: data['description'],
       ingredients: (data['ingredients'] as List<dynamic>?)
@@ -245,6 +294,7 @@ class RecipeModel {
       cookTimeMinutes: data['cookTimeMinutes'],
       servings: data['servings'] ?? 1,
       difficulty: data['difficulty'],
+      category: data['category'],
       tags: List<String>.from(data['tags'] ?? []),
       dietaryTags: List<String>.from(data['dietaryTags'] ?? []),
       originalSource: data['originalSource'],
@@ -266,6 +316,7 @@ class RecipeModel {
   }
 
   RecipeModel copyWith({
+    String? authorName,
     String? title,
     String? description,
     List<Ingredient>? ingredients,
@@ -275,6 +326,7 @@ class RecipeModel {
     int? cookTimeMinutes,
     int? servings,
     String? difficulty,
+    String? category,
     List<String>? tags,
     List<String>? dietaryTags,
     String? originalSource,
@@ -290,6 +342,7 @@ class RecipeModel {
     return RecipeModel(
       recipeId: recipeId,
       authorId: authorId,
+      authorName: authorName ?? this.authorName,
       title: title ?? this.title,
       description: description ?? this.description,
       ingredients: ingredients ?? this.ingredients,
@@ -299,6 +352,7 @@ class RecipeModel {
       cookTimeMinutes: cookTimeMinutes ?? this.cookTimeMinutes,
       servings: servings ?? this.servings,
       difficulty: difficulty ?? this.difficulty,
+      category: category ?? this.category,
       tags: tags ?? this.tags,
       dietaryTags: dietaryTags ?? this.dietaryTags,
       originalSource: originalSource ?? this.originalSource,

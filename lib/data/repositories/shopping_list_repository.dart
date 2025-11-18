@@ -124,14 +124,15 @@ class ShoppingListRepository {
           final existingIndex = items.indexWhere(
             (item) =>
                 item.ingredientName.toLowerCase() == ingredient.item.toLowerCase() &&
-                item.unit?.toLowerCase() == ingredient.unit.toLowerCase(),
+                item.unit?.toLowerCase() == ingredient.unit?.toLowerCase(),
           );
 
           if (existingIndex != -1) {
             // Combine amounts if same ingredient and unit
             final existing = items[existingIndex];
             final currentAmount = double.tryParse(existing.amount) ?? 0;
-            final newAmount = currentAmount + ingredient.amount;
+            final ingredientAmount = double.tryParse(ingredient.amount ?? '0') ?? 0;
+            final newAmount = currentAmount + ingredientAmount;
 
             items[existingIndex] = existing.copyWith(
               amount: newAmount.toString(),
@@ -140,7 +141,7 @@ class ShoppingListRepository {
             // Add new ingredient
             items.add(ShoppingListItem(
               ingredientName: ingredient.item,
-              amount: ingredient.amount.toString(),
+              amount: ingredient.amount ?? '',
               unit: ingredient.unit,
               sourceRecipeId: recipe.recipeId,
             ));

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipe_app/data/services/auth_service.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
-import 'package:recipe_app/presentation/screens/auth/login_screen.dart';
 import 'package:recipe_app/presentation/screens/recipes/recipes_screen.dart';
 import 'package:recipe_app/presentation/screens/events/events_screen.dart';
 import 'package:recipe_app/presentation/screens/profile/user_profile_screen.dart';

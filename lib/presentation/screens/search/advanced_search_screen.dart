@@ -102,7 +102,7 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
       if (_searchQuery.isNotEmpty) {
         final query = _searchQuery.toLowerCase();
         final matchesTitle = recipe.title.toLowerCase().contains(query);
-        final matchesDescription = recipe.description.toLowerCase().contains(query);
+        final matchesDescription = recipe.description?.toLowerCase().contains(query) ?? false;
         if (!matchesTitle && !matchesDescription) return false;
       }
 

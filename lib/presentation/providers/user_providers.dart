@@ -1,14 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/data/models/user_model.dart';
-import 'package:recipe_app/data/repositories/user_repository.dart';
-import 'package:recipe_app/data/services/firebase_service.dart';
-import 'package:recipe_app/data/services/auth_service.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
-
-// User Repository Provider
-final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepository();
-});
 
 // User Profile Provider - fetches a user by ID
 final userProfileProvider = FutureProvider.family<UserModel?, String>((ref, userId) async {

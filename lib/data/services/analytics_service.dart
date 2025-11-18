@@ -165,7 +165,7 @@ class AnalyticsService {
       await _analytics.logShare(
         contentType: 'recipe',
         itemId: recipeId,
-        method: method,
+        method: method ?? 'unknown',
       );
     } catch (e) {
       if (kDebugMode) {
@@ -251,7 +251,7 @@ class AnalyticsService {
       await _analytics.logShare(
         contentType: 'event',
         itemId: eventId,
-        method: method,
+        method: method ?? 'unknown',
       );
     } catch (e) {
       if (kDebugMode) {

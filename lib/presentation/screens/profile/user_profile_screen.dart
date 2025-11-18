@@ -8,6 +8,7 @@ import 'package:recipe_app/presentation/providers/user_providers.dart';
 import 'package:recipe_app/presentation/providers/recipe_providers.dart';
 import 'package:recipe_app/presentation/screens/profile/edit_profile_screen.dart';
 import 'package:recipe_app/presentation/screens/profile/followers_screen.dart';
+import 'package:recipe_app/presentation/screens/recipes/recipe_detail_screen.dart';
 import 'package:recipe_app/presentation/widgets/recipe_card.dart';
 
 class UserProfileScreen extends ConsumerWidget {
@@ -357,7 +358,16 @@ class UserProfileScreen extends ConsumerWidget {
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
-                return RecipeCard(recipe: recipes[index]);
+                return RecipeCard(
+                  recipe: recipes[index],
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RecipeDetailScreen(recipeId: recipes[index].recipeId),
+                      ),
+                    );
+                  },
+                );
               },
               childCount: recipes.length,
             ),

@@ -19,6 +19,12 @@ final userRecipesProvider = FutureProvider.family<List<RecipeModel>, String>((re
   return recipeRepository.getUserRecipes(userId);
 });
 
+// All Recipes Provider (for search/filtering)
+final allRecipesProvider = FutureProvider<List<RecipeModel>>((ref) async {
+  final recipeRepository = ref.watch(recipeRepositoryProvider);
+  return recipeRepository.getPublicRecipes(limit: 100);
+});
+
 // Public Recipes Provider
 final publicRecipesProvider = FutureProvider<List<RecipeModel>>((ref) async {
   final recipeRepository = ref.watch(recipeRepositoryProvider);
