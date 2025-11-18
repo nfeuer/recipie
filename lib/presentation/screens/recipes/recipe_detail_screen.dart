@@ -6,13 +6,13 @@ import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/data/models/recipe_model.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/recipe_providers.dart';
+import 'package:recipe_app/presentation/providers/dynamic_link_providers.dart';
 import 'package:recipe_app/presentation/screens/recipes/edit_recipe_screen.dart';
 import 'package:recipe_app/presentation/screens/recipes/fork_recipe_screen.dart';
 import 'package:recipe_app/presentation/screens/made_it/create_made_it_post_screen.dart';
 import 'package:recipe_app/presentation/widgets/comments_section.dart';
 import 'package:recipe_app/presentation/widgets/ratings_section.dart';
 import 'package:recipe_app/presentation/widgets/made_it_posts_section.dart';
-import 'package:share_plus/share_plus.dart';
 
 class RecipeDetailScreen extends ConsumerWidget {
   final String recipeId;
@@ -81,8 +81,13 @@ class RecipeDetailScreen extends ConsumerWidget {
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.share),
-                    onPressed: () {
-                      Share.share('Check out this recipe: ${recipe.title}');
+                    onPressed: () async {
+                      final dynamicLinkService = ref.read(dynamicLinkServiceProvider);
+                      await dynamicLinkService.shareRecipe(
+                        recipeId: recipe.recipeId,
+                        recipeTitle: recipe.title,
+                        imageUrl: recipe.photoUrls.isNotEmpty ? recipe.photoUrls.first : null,
+                      );
                     },
                   ),
                   if (isOwner)

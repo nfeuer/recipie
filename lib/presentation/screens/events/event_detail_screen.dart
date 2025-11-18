@@ -6,9 +6,9 @@ import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/data/models/event_model.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/event_providers.dart';
+import 'package:recipe_app/presentation/providers/dynamic_link_providers.dart';
 import 'package:recipe_app/presentation/screens/events/edit_event_screen.dart';
 import 'package:recipe_app/presentation/screens/recipes/recipe_detail_screen.dart';
-import 'package:share_plus/share_plus.dart';
 
 class EventDetailScreen extends ConsumerWidget {
   final String eventId;
@@ -38,8 +38,12 @@ class EventDetailScreen extends ConsumerWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.share),
-                onPressed: () {
-                  Share.share('Join my event: ${event.title}\n${event.shareCode ?? ''}');
+                onPressed: () async {
+                  final dynamicLinkService = ref.read(dynamicLinkServiceProvider);
+                  await dynamicLinkService.shareEvent(
+                    eventId: event.eventId,
+                    eventTitle: event.title,
+                  );
                 },
               ),
               if (isHost)
