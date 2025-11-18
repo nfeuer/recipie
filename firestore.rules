@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isEventHost(eventId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/events/$(eventId)).data.hostId == request.auth.uid;
+    }
+
+    function isEventGuest(eventId) {
+      let event = get(/databases/$(database)/documents/events/$(eventId)).data;
+      return isSignedIn() &&
+        (event.hostId == request.auth.uid ||
+         request.auth.uid in event.guests.map(guest => guest.userId));
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+
+      // User's subcollections
+      match /shoppingLists/{listId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /notifications/{notificationId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Recipes
+    match /recipes/{recipeId} {
+      allow read: if isSignedIn() &&
+        (resource.data.privacy == 'public' ||
+         (resource.data.privacy == 'friends' &&
+          exists(/databases/$(database)/documents/following/$(resource.data.authorId)/userFollowers/$(request.auth.uid))) ||
+         resource.data.authorId == request.auth.uid ||
+         resource.data.privacy == 'eventOnly');
+
+      allow create: if isSignedIn() &&
+        request.resource.data.authorId == request.auth.uid;
+
+      allow update, delete: if isSignedIn() &&
+        resource.data.authorId == request.auth.uid;
+
+      // Comments
+      match /comments/{commentId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() &&
+          request.resource.data.userId == request.auth.uid;
+        allow update, delete: if isSignedIn() &&
+          resource.data.userId == request.auth.uid;
+      }
+
+      // Ratings
+      match /ratings/{userId} {
+        allow read: if isSignedIn();
+        allow write: if isOwner(userId);
+      }
+
+      // Made It posts
+      match /madeIt/{postId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() &&
+          request.resource.data.userId == request.auth.uid;
+        allow update, delete: if isSignedIn() &&
+          resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // Events
+    match /events/{eventId} {
+      allow read: if isSignedIn() &&
+        (resource.data.privacy == 'public' ||
+         resource.data.hostId == request.auth.uid ||
+         request.auth.uid in resource.data.guests.map(g => g.userId));
+
+      allow create: if isSignedIn() &&
+        request.resource.data.hostId == request.auth.uid;
+
+      allow update, delete: if isSignedIn() &&
+        resource.data.hostId == request.auth.uid;
+
+      // Recipe requests
+      match /recipeRequests/{requestId} {
+        allow read: if isEventHost(eventId) || isEventGuest(eventId);
+        allow create: if isEventGuest(eventId);
+        allow update, delete: if isEventHost(eventId);
+      }
+    }
+
+    // Following relationships
+    match /following/{userId}/userFollowing/{followedUserId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    match /following/{userId}/userFollowers/{followerUserId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(followerUserId);
+    }
+  }
+}

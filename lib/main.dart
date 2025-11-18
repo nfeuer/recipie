@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/core/config/firebase_config.dart';
+import 'package:recipe_app/core/constants/app_theme.dart';
+import 'package:recipe_app/presentation/screens/splash_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  try {
+    await FirebaseConfig.initialize();
+  } catch (e) {
+    debugPrint('Firebase initialization error: $e');
+  }
+
+  runApp(
+    const ProviderScope(
+      child: RecipeApp(),
+    ),
+  );
+}
+
+class RecipeApp extends StatelessWidget {
+  const RecipeApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Recipe & Event Platform',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const SplashScreen(),
+    );
+  }
+}
