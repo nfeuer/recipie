@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/presentation/providers/activity_providers.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
+import 'package:recipe_app/presentation/providers/notification_providers.dart';
 import 'package:recipe_app/presentation/widgets/activity_item.dart';
 import 'package:recipe_app/presentation/screens/profile/search_users_screen.dart';
+import 'package:recipe_app/presentation/screens/notifications/notifications_screen.dart';
 
 class ActivityFeedScreen extends ConsumerWidget {
   const ActivityFeedScreen({super.key});
@@ -18,6 +20,73 @@ class ActivityFeedScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Activity Feed'),
         actions: [
+          // Notification bell with badge
+          Consumer(
+            builder: (context, ref, child) {
+              final unreadCount = ref.watch(unreadNotificationCountProvider);
+              return unreadCount.when(
+                data: (count) => Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.notifications_outlined),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    if (count > 0)
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            count > 99 ? '99+' : count.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                loading: () => IconButton(
+                  icon: const Icon(Icons.notifications_outlined),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                error: (_, __) => IconButton(
+                  icon: const Icon(Icons.notifications_outlined),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationsScreen(),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
