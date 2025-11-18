@@ -10,6 +10,7 @@ class FirebaseCollections {
   static const String ratings = 'ratings';
   static const String madeIt = 'madeIt';
   static const String recipeRequests = 'recipeRequests';
+  static const String activities = 'activities';
 }
 
 // Firebase Storage Paths
