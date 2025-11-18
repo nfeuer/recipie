@@ -5,6 +5,7 @@ import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/recipe_providers.dart';
 import 'package:recipe_app/presentation/screens/recipes/recipe_detail_screen.dart';
 import 'package:recipe_app/presentation/screens/recipes/create_recipe_screen.dart';
+import 'package:recipe_app/presentation/screens/search/advanced_search_screen.dart';
 import 'package:recipe_app/presentation/widgets/recipe_card.dart';
 
 class RecipesScreen extends ConsumerStatefulWidget {
@@ -40,6 +41,17 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> with SingleTicker
       appBar: AppBar(
         title: const Text('Recipes'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AdvancedSearchScreen(),
+                ),
+              );
+            },
+            tooltip: 'Advanced Search',
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
