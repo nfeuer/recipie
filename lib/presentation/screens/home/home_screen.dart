@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/data/services/auth_service.dart';
 import 'package:recipe_app/presentation/screens/auth/login_screen.dart';
 import 'package:recipe_app/presentation/screens/recipes/recipes_screen.dart';
+import 'package:recipe_app/presentation/screens/events/events_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +18,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final List<Widget> _screens = [
     const HomeFeedScreen(),
     const RecipesScreen(),
-    const EventsPlaceholderScreen(),
+    const EventsScreen(),
     const ProfilePlaceholderScreen(),
   ];
 
@@ -143,20 +144,27 @@ class HomeFeedScreen extends ConsumerWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Phase 1: Recipe Management Complete! ✅',
+                        'Core Features Complete! ✅',
                         style: Theme.of(context).textTheme.titleLarge,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'Features Implemented:\n\n'
+                        'Phase 1 - Recipe Management:\n'
                         '✅ Recipe creation and editing\n'
                         '✅ Recipe browsing with tabs\n'
                         '✅ Photo upload support\n'
                         '✅ Search functionality\n'
                         '✅ Dietary tags and filtering\n'
                         '✅ Recipe privacy settings\n\n'
-                        'Explore the Recipes tab to get started!',
+                        'Phase 2 - Event Management:\n'
+                        '✅ Event creation and editing\n'
+                        '✅ Event browsing (My Events, Attending, Upcoming)\n'
+                        '✅ Guest list management\n'
+                        '✅ Menu planning with recipes\n'
+                        '✅ RSVP functionality\n'
+                        '✅ Event QR codes\n\n'
+                        'Explore the Events tab to host your first gathering!',
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -176,11 +184,11 @@ class HomeFeedScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        '• Event Management\n'
-                        '• Social Features (Follow, Comments)\n'
-                        '• Recipe Forking\n'
+                        '• Social Features (Follow, Comments, Activity Feed)\n'
+                        '• Recipe Forking & "I Made This"\n'
                         '• Shopping Lists\n'
                         '• Push Notifications\n'
+                        '• Recipe Import from URLs\n'
                         '• And more!',
                       ),
                     ],
@@ -196,32 +204,6 @@ class HomeFeedScreen extends ConsumerWidget {
 }
 
 // Placeholder Screens
-class EventsPlaceholderScreen extends StatelessWidget {
-  const EventsPlaceholderScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Events')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.event, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              'Events Coming Soon!',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            const Text('Event management features will be added in Phase 2'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class ProfilePlaceholderScreen extends ConsumerWidget {
   const ProfilePlaceholderScreen({super.key});
 
