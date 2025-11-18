@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:recipe_app/data/services/push_notification_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final PushNotificationService _pushNotificationService = PushNotificationService();
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -37,6 +39,12 @@ class AuthService {
         email: email,
         password: password,
       );
+
+      // Save FCM token
+      if (userCredential.user != null) {
+        await _pushNotificationService.saveFCMToken(userCredential.user!.uid);
+      }
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -64,7 +72,14 @@ class AuthService {
       );
 
       // Sign in to Firebase with the Google credential
-      return await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
+
+      // Save FCM token
+      if (userCredential.user != null) {
+        await _pushNotificationService.saveFCMToken(userCredential.user!.uid);
+      }
+
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -110,6 +125,12 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
+    // Remove FCM token before signing out
+    final userId = currentUser?.uid;
+    if (userId != null) {
+      await _pushNotificationService.removeFCMToken(userId);
+    }
+
     await Future.wait([
       _auth.signOut(),
       _googleSignIn.signOut(),

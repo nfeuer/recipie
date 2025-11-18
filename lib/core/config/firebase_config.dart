@@ -1,11 +1,22 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:recipe_app/data/services/push_notification_service.dart';
 
 class FirebaseConfig {
   static Future<void> initialize() async {
     await Firebase.initializeApp(
       options: _getFirebaseOptions(),
     );
+
+    // Initialize push notifications
+    try {
+      final pushNotificationService = PushNotificationService();
+      await pushNotificationService.initialize();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing push notifications: $e');
+      }
+    }
   }
 
   static FirebaseOptions _getFirebaseOptions() {
