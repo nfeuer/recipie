@@ -7,6 +7,7 @@ import 'package:recipe_app/data/models/recipe_model.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/recipe_providers.dart';
 import 'package:recipe_app/presentation/screens/recipes/edit_recipe_screen.dart';
+import 'package:recipe_app/presentation/screens/recipes/fork_recipe_screen.dart';
 import 'package:recipe_app/presentation/screens/made_it/create_made_it_post_screen.dart';
 import 'package:recipe_app/presentation/widgets/comments_section.dart';
 import 'package:recipe_app/presentation/widgets/ratings_section.dart';
@@ -425,9 +426,10 @@ class RecipeDetailScreen extends ConsumerWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () {
-                // TODO: Implement fork recipe
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fork recipe feature coming soon')),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ForkRecipeScreen(originalRecipe: recipe),
+                  ),
                 );
               },
               icon: const Icon(Icons.call_split),
