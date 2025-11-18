@@ -145,4 +145,25 @@ class StorageService {
       throw Exception('Failed to upload multiple event photos: $e');
     }
   }
+
+  // Upload profile picture
+  Future<String> uploadProfilePicture(File file, String userId) async {
+    return uploadUserProfilePhoto(userId: userId, file: file);
+  }
+
+  // Upload "I Made This" photo
+  Future<String> uploadMadeItPhoto(File file, String postId, int index) async {
+    try {
+      final path = 'madeIt/$postId/photo_$index.jpg';
+      final ref = _storage.ref().child(path);
+
+      final uploadTask = ref.putFile(file);
+      final snapshot = await uploadTask.whenComplete(() {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      return downloadUrl;
+    } catch (e) {
+      throw Exception('Failed to upload Made It photo: $e');
+    }
+  }
 }

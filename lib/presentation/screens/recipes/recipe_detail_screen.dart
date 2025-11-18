@@ -7,6 +7,10 @@ import 'package:recipe_app/data/models/recipe_model.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/recipe_providers.dart';
 import 'package:recipe_app/presentation/screens/recipes/edit_recipe_screen.dart';
+import 'package:recipe_app/presentation/screens/made_it/create_made_it_post_screen.dart';
+import 'package:recipe_app/presentation/widgets/comments_section.dart';
+import 'package:recipe_app/presentation/widgets/ratings_section.dart';
+import 'package:recipe_app/presentation/widgets/made_it_posts_section.dart';
 import 'package:share_plus/share_plus.dart';
 
 class RecipeDetailScreen extends ConsumerWidget {
@@ -188,6 +192,29 @@ class RecipeDetailScreen extends ConsumerWidget {
 
                       // Actions
                       _buildActionButtons(context, ref, recipe, isOwner),
+                      const SizedBox(height: 32),
+
+                      // Ratings Section
+                      const Divider(),
+                      RatingsSection(
+                        recipeId: recipe.recipeId,
+                        recipeName: recipe.title,
+                        recipePhotoUrl: recipe.photoUrls.isNotEmpty ? recipe.photoUrls.first : null,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Comments Section
+                      const Divider(),
+                      CommentsSection(
+                        recipeId: recipe.recipeId,
+                        recipeName: recipe.title,
+                        recipePhotoUrl: recipe.photoUrls.isNotEmpty ? recipe.photoUrls.first : null,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Made It Posts Section
+                      const Divider(),
+                      MadeItPostsSection(recipeId: recipe.recipeId),
                       const SizedBox(height: 24),
                     ],
                   ),
@@ -412,9 +439,14 @@ class RecipeDetailScreen extends ConsumerWidget {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              // TODO: Implement "I made this"
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('"I Made This" feature coming soon')),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CreateMadeItPostScreen(
+                    recipeId: recipe.recipeId,
+                    recipeName: recipe.title,
+                    recipePhotoUrl: recipe.photoUrls.isNotEmpty ? recipe.photoUrls.first : null,
+                  ),
+                ),
               );
             },
             icon: const Icon(Icons.check_circle),
