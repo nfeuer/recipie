@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/data/models/recipe_model.dart';
+import 'package:recipe_app/data/models/shopping_list_model.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/recipe_providers.dart';
 import 'package:recipe_app/presentation/providers/shopping_list_providers.dart';
