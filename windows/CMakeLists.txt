@@ -1,5 +1,10 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
+
+# Set MSVC runtime library to MultiThreadedDLL for Firebase compatibility
+# This must be set before project() call
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+
 project(recipe_app LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
