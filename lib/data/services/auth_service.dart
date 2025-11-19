@@ -5,9 +5,15 @@ import 'package:recipe_app/data/services/analytics_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  GoogleSignIn? _googleSignIn;
   final PushNotificationService _pushNotificationService = PushNotificationService();
   final AnalyticsService _analyticsService = AnalyticsService();
+
+  // Lazy initialization of GoogleSignIn
+  GoogleSignIn get googleSignIn {
+    _googleSignIn ??= GoogleSignIn();
+    return _googleSignIn!;
+  }
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -66,7 +72,7 @@ class AuthService {
   Future<UserCredential> signInWithGoogle() async {
     try {
       // Trigger the Google Sign-In flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
         throw Exception('Google sign-in cancelled');
@@ -151,10 +157,12 @@ class AuthService {
       await _analyticsService.clearUser();
     }
 
-    await Future.wait([
-      _auth.signOut(),
-      _googleSignIn.signOut(),
-    ]);
+    await _auth.signOut();
+
+    // Only sign out from Google if it was initialized
+    if (_googleSignIn != null) {
+      await _googleSignIn!.signOut();
+    }
   }
 
   // Delete account
