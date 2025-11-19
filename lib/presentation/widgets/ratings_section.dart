@@ -30,8 +30,6 @@ class RatingsSection extends ConsumerStatefulWidget {
 }
 
 class _RatingsSectionState extends ConsumerState<RatingsSection> {
-  bool _showRatingDialog = false;
-
   @override
   Widget build(BuildContext context) {
     final ratingsAsync = ref.watch(recipeRatingsStreamProvider(widget.recipeId));

@@ -500,6 +500,7 @@ class _EditRecipeScreenState extends ConsumerState<EditRecipeScreen> {
       case RecipePrivacy.public:
         return 'Public - Everyone can see';
       case RecipePrivacy.friends:
+      case RecipePrivacy.friendsOnly:
         return 'Friends - Only followers';
       case RecipePrivacy.private:
         return 'Private - Only me';

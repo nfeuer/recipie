@@ -577,7 +577,7 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      recipe.category,
+                      recipe.category ?? 'Uncategorized',
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 12,
@@ -599,7 +599,7 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
                         Icon(Icons.trending_up, size: 14, color: Colors.grey[600]),
                         const SizedBox(width: 4),
                         Text(
-                          recipe.difficulty,
+                          recipe.difficulty ?? 'Medium',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],

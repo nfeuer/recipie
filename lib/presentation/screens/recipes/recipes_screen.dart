@@ -18,7 +18,6 @@ class RecipesScreen extends ConsumerStatefulWidget {
 class _RecipesScreenState extends ConsumerState<RecipesScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _searchController = TextEditingController();
-  String _searchQuery = '';
 
   @override
   void initState() {

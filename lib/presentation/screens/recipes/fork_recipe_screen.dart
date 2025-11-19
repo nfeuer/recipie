@@ -92,8 +92,8 @@ class _ForkRecipeScreenState extends ConsumerState<ForkRecipeScreen> {
   void _addIngredient() {
     setState(() {
       _ingredients.add(Ingredient(
-        item: '',
-        amount: 0,
+        name: '',
+        amount: '0',
         unit: '',
       ));
     });
@@ -108,7 +108,7 @@ class _ForkRecipeScreenState extends ConsumerState<ForkRecipeScreen> {
   void _addStep() {
     setState(() {
       _steps.add(RecipeStep(
-        stepNumber: _steps.length + 1,
+        order: _steps.length + 1,
         instruction: '',
       ));
     });
@@ -119,7 +119,7 @@ class _ForkRecipeScreenState extends ConsumerState<ForkRecipeScreen> {
       _steps.removeAt(index);
       // Renumber steps
       for (int i = 0; i < _steps.length; i++) {
-        _steps[i] = _steps[i].copyWith(stepNumber: i + 1);
+        _steps[i] = _steps[i].copyWith(order: i + 1);
       }
     });
   }
@@ -188,10 +188,12 @@ class _ForkRecipeScreenState extends ConsumerState<ForkRecipeScreen> {
         updatedAt: DateTime.now(),
         parentRecipeId: widget.originalRecipe.recipeId,
         modifications: RecipeModifications(
-          summary: _modificationsController.text.trim().isNotEmpty
+          parentRecipeId: widget.originalRecipe.recipeId,
+          modificationReason: _modificationsController.text.trim().isNotEmpty
               ? _modificationsController.text.trim()
               : 'Forked from ${widget.originalRecipe.title}',
-          changeLog: [],
+          changes: [],
+          modifiedAt: DateTime.now(),
         ),
       );
 
@@ -706,25 +708,25 @@ class _ForkRecipeScreenState extends ConsumerState<ForkRecipeScreen> {
                 Expanded(
                   flex: 2,
                   child: TextFormField(
-                    initialValue: ingredient.item,
+                    initialValue: ingredient.name,
                     decoration: const InputDecoration(
                       labelText: 'Item',
                       hintText: 'e.g., Flour',
                     ),
                     onChanged: (value) {
-                      _ingredients[index] = ingredient.copyWith(item: value);
+                      _ingredients[index] = ingredient.copyWith(name: value);
                     },
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: TextFormField(
-                    initialValue: ingredient.amount.toString(),
+                    initialValue: ingredient.amount ?? '',
                     decoration: const InputDecoration(labelText: 'Amount'),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
                       _ingredients[index] = ingredient.copyWith(
-                        amount: double.tryParse(value) ?? 0,
+                        amount: value,
                       );
                     },
                   ),
@@ -840,6 +842,7 @@ class _ForkRecipeScreenState extends ConsumerState<ForkRecipeScreen> {
     switch (privacy) {
       case RecipePrivacy.public:
         return 'Public';
+      case RecipePrivacy.friends:
       case RecipePrivacy.friendsOnly:
         return 'Friends Only';
       case RecipePrivacy.private:
