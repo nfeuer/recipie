@@ -1,5 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum SubscriptionTier {
+  free,
+  premium,
+  superAdmin,
+}
+
 class UserModel {
   final String uid;
   final String email;
@@ -10,6 +16,8 @@ class UserModel {
   final Map<String, bool> privacySettings;
   final List<String> following;
   final List<String> followers;
+  final SubscriptionTier subscriptionTier;
+  final DateTime? subscriptionExpiresAt;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -26,9 +34,25 @@ class UserModel {
     },
     this.following = const [],
     this.followers = const [],
+    this.subscriptionTier = SubscriptionTier.free,
+    this.subscriptionExpiresAt,
     required this.createdAt,
     required this.updatedAt,
   });
+
+  // Computed properties
+  bool get isSuperAdmin => subscriptionTier == SubscriptionTier.superAdmin;
+
+  bool get isPremium {
+    if (subscriptionTier == SubscriptionTier.superAdmin) return true;
+    if (subscriptionTier == SubscriptionTier.premium) {
+      if (subscriptionExpiresAt == null) return true; // Lifetime premium
+      return subscriptionExpiresAt!.isAfter(DateTime.now());
+    }
+    return false;
+  }
+
+  bool get hasPremiumAccess => isPremium || isSuperAdmin;
 
   // Convert to Firestore document
   Map<String, dynamic> toFirestore() {
@@ -42,6 +66,10 @@ class UserModel {
       'privacySettings': privacySettings,
       'following': following,
       'followers': followers,
+      'subscriptionTier': subscriptionTier.name,
+      'subscriptionExpiresAt': subscriptionExpiresAt != null
+          ? Timestamp.fromDate(subscriptionExpiresAt!)
+          : null,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -50,6 +78,20 @@ class UserModel {
   // Create from Firestore document
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    // Parse subscription tier
+    SubscriptionTier tier = SubscriptionTier.free;
+    if (data['subscriptionTier'] != null) {
+      try {
+        tier = SubscriptionTier.values.firstWhere(
+          (e) => e.name == data['subscriptionTier'],
+          orElse: () => SubscriptionTier.free,
+        );
+      } catch (_) {
+        tier = SubscriptionTier.free;
+      }
+    }
+
     return UserModel(
       uid: doc.id,
       email: data['email'] ?? '',
@@ -60,6 +102,10 @@ class UserModel {
       privacySettings: Map<String, bool>.from(data['privacySettings'] ?? {}),
       following: List<String>.from(data['following'] ?? []),
       followers: List<String>.from(data['followers'] ?? []),
+      subscriptionTier: tier,
+      subscriptionExpiresAt: data['subscriptionExpiresAt'] != null
+          ? (data['subscriptionExpiresAt'] as Timestamp).toDate()
+          : null,
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
@@ -74,6 +120,8 @@ class UserModel {
     Map<String, bool>? privacySettings,
     List<String>? following,
     List<String>? followers,
+    SubscriptionTier? subscriptionTier,
+    DateTime? subscriptionExpiresAt,
     DateTime? updatedAt,
   }) {
     return UserModel(
@@ -86,6 +134,8 @@ class UserModel {
       privacySettings: privacySettings ?? this.privacySettings,
       following: following ?? this.following,
       followers: followers ?? this.followers,
+      subscriptionTier: subscriptionTier ?? this.subscriptionTier,
+      subscriptionExpiresAt: subscriptionExpiresAt ?? this.subscriptionExpiresAt,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
