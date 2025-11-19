@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
+import 'package:recipe_app/presentation/providers/user_providers.dart';
 import 'package:recipe_app/presentation/screens/premium/premium_screen.dart';
 
 /// Widget that gates premium features behind subscription check
@@ -26,10 +27,15 @@ class PremiumFeatureGate extends ConsumerWidget {
     return currentUserAsync.when(
       data: (firebaseUser) {
         if (firebaseUser == null) {
-          return _buildLockedFeature(context, 'Please sign in to access this feature');
+          return _buildLockedFeature(
+            context,
+            'Please sign in to access this feature',
+          );
         }
 
-        final userProfileAsync = ref.watch(userProfileProvider(firebaseUser.uid));
+        final userProfileAsync = ref.watch(
+          userProfileProvider(firebaseUser.uid),
+        );
         return userProfileAsync.when(
           data: (userProfile) {
             if (userProfile == null) {
@@ -45,7 +51,8 @@ class PremiumFeatureGate extends ConsumerWidget {
             return _buildLockedFeature(context, null);
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, __) => _buildLockedFeature(context, 'Error loading user profile'),
+          error: (_, __) =>
+              _buildLockedFeature(context, 'Error loading user profile'),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -72,9 +79,9 @@ class PremiumFeatureGate extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             errorMessage ?? 'Premium Feature',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
@@ -86,12 +93,11 @@ class PremiumFeatureGate extends ConsumerWidget {
           const SizedBox(height: 24),
           if (errorMessage == null)
             ElevatedButton.icon(
-              onPressed: onUpgradePressed ??
+              onPressed:
+                  onUpgradePressed ??
                   () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const PremiumScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const PremiumScreen()),
                     );
                   },
               icon: const Icon(Icons.upgrade),
@@ -124,21 +130,14 @@ class PremiumBadge extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.amber[700]!,
-            Colors.amber[500]!,
-          ],
+          colors: [Colors.amber[700]!, Colors.amber[500]!],
         ),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.star,
-            size: small ? 12 : 16,
-            color: Colors.white,
-          ),
+          Icon(Icons.star, size: small ? 12 : 16, color: Colors.white),
           SizedBox(width: small ? 2 : 4),
           Text(
             'PREMIUM',

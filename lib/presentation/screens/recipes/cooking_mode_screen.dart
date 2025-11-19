@@ -6,6 +6,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/data/models/recipe_model.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
+import 'package:recipe_app/presentation/providers/user_providers.dart';
 import 'package:recipe_app/presentation/widgets/premium_feature_gate.dart';
 
 class CookingModeScreen extends ConsumerStatefulWidget {
@@ -62,7 +63,9 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
       _remainingSeconds[stepIndex] = seconds;
     });
 
-    _stepTimers[stepIndex] = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _stepTimers[stepIndex] = Timer.periodic(const Duration(seconds: 1), (
+      timer,
+    ) {
       setState(() {
         final remaining = _remainingSeconds[stepIndex]! - 1;
         if (remaining <= 0) {
@@ -136,8 +139,6 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUserAsync = ref.watch(currentUserProvider);
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -170,7 +171,9 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
           LinearProgressIndicator(
             value: (_currentStep + 1) / widget.recipe.steps.length,
             backgroundColor: Colors.grey[800],
-            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+            valueColor: const AlwaysStoppedAnimation<Color>(
+              AppTheme.primaryColor,
+            ),
           ),
 
           // Step counter
@@ -178,10 +181,7 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
             padding: const EdgeInsets.all(16),
             child: Text(
               'Step ${_currentStep + 1} of ${widget.recipe.steps.length}',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             ),
           ),
 
@@ -275,14 +275,18 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
                       // Complete checkbox
                       Container(
                         decoration: BoxDecoration(
-                          color: isCompleted ? Colors.green[900] : Colors.grey[900],
+                          color: isCompleted
+                              ? Colors.green[900]
+                              : Colors.grey[900],
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: CheckboxListTile(
                           title: Text(
                             'Mark as complete',
                             style: TextStyle(
-                              color: isCompleted ? Colors.white : Colors.white70,
+                              color: isCompleted
+                                  ? Colors.white
+                                  : Colors.white70,
                               fontSize: 18,
                             ),
                           ),
@@ -319,10 +323,7 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
                 ),
                 Text(
                   '${_completedSteps.length}/${widget.recipe.steps.length} completed',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
                 ElevatedButton.icon(
                   onPressed: _currentStep < widget.recipe.steps.length - 1
@@ -348,39 +349,26 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
   Widget _buildTimerButton(int stepIndex, int seconds, String label) {
     return ElevatedButton(
       onPressed: () => _startTimer(stepIndex, seconds),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppTheme.primaryColor,
-      ),
+      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
       child: Text(label),
     );
   }
 
   void _showVoiceCommandsDialog() {
-    final currentUserAsync = ref.read(currentUserProvider);
+    final firebaseUser = ref.read(currentUserProvider).value;
 
-    currentUserAsync.when(
-      data: (firebaseUser) {
-        if (firebaseUser == null) {
-          _showNeedPremiumDialog('Please sign in to use voice commands');
-          return;
-        }
+    if (firebaseUser == null) {
+      _showNeedPremiumDialog('Please sign in to use voice commands');
+      return;
+    }
 
-        final userProfileAsync = ref.read(userProfileProvider(firebaseUser.uid));
-        userProfileAsync.when(
-          data: (userProfile) {
-            if (userProfile == null || !userProfile.hasPremiumAccess) {
-              _showNeedPremiumDialog(null);
-            } else {
-              _showVoiceCommandsInfo();
-            }
-          },
-          loading: () {},
-          error: (_, __) {},
-        );
-      },
-      loading: () {},
-      error: (_, __) {},
-    );
+    final userProfile = ref.read(userProfileProvider(firebaseUser.uid)).value;
+
+    if (userProfile == null || !userProfile.hasPremiumAccess) {
+      _showNeedPremiumDialog(null);
+    } else {
+      _showVoiceCommandsInfo();
+    }
   }
 
   void _showNeedPremiumDialog(String? message) {
@@ -394,7 +382,8 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
             const PremiumBadge(),
             const SizedBox(height: 16),
             Text(
-              message ?? 'Hands-free voice commands are a premium feature. Upgrade to Premium to unlock this feature!',
+              message ??
+                  'Hands-free voice commands are a premium feature. Upgrade to Premium to unlock this feature!',
             ),
           ],
         ),
@@ -425,8 +414,10 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Available voice commands:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                'Available voice commands:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 8),
               Text('• "Next step" - Go to next step'),
               Text('• "Previous step" - Go to previous step'),
@@ -434,8 +425,10 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
               Text('• "Complete step" - Mark current step as complete'),
               Text('• "Read step" - Read current step aloud'),
               SizedBox(height: 16),
-              Text('Note: Voice commands feature is coming soon!',
-                  style: TextStyle(fontStyle: FontStyle.italic)),
+              Text(
+                'Note: Voice commands feature is coming soon!',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
             ],
           ),
         ),

@@ -71,7 +71,7 @@ class IngredientScaling {
 
   /// Try to convert a decimal to a common fraction
   static String? _toFraction(double decimal) {
-    const commonFractions = {
+    final commonFractions = <double, String>{
       0.125: '1/8',
       0.25: '1/4',
       0.333: '1/3',

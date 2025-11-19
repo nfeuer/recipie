@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
+import 'package:recipe_app/presentation/providers/user_providers.dart';
 
 class PremiumScreen extends ConsumerWidget {
   const PremiumScreen({super.key});
@@ -35,26 +36,22 @@ class PremiumScreen extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.star,
-                    size: 80,
-                    color: Colors.white,
-                  ),
+                  const Icon(Icons.star, size: 80, color: Colors.white),
                   const SizedBox(height: 16),
                   Text(
                     'Unlock Premium Features',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Take your cooking experience to the next level',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.white.withOpacity(0.9),
-                        ),
+                      color: Colors.white.withOpacity(0.9),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -70,8 +67,8 @@ class PremiumScreen extends ConsumerWidget {
                   Text(
                     'Premium Features',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildFeatureItem(
@@ -110,7 +107,7 @@ class PremiumScreen extends ConsumerWidget {
                     description: 'Access recipes without internet',
                   ),
                   _buildFeatureItem(
-                    icon: Icons.ad_units_off,
+                    icon: Icons.block,
                     title: 'Ad-Free Experience',
                     description: 'No advertisements or interruptions',
                   ),
@@ -126,8 +123,8 @@ class PremiumScreen extends ConsumerWidget {
                   Text(
                     'Choose Your Plan',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildPricingCard(
@@ -167,7 +164,9 @@ class PremiumScreen extends ConsumerWidget {
               data: (firebaseUser) {
                 if (firebaseUser == null) return const SizedBox.shrink();
 
-                final userProfileAsync = ref.watch(userProfileProvider(firebaseUser.uid));
+                final userProfileAsync = ref.watch(
+                  userProfileProvider(firebaseUser.uid),
+                );
                 return userProfileAsync.when(
                   data: (userProfile) {
                     if (userProfile == null) return const SizedBox.shrink();
@@ -246,11 +245,7 @@ class PremiumScreen extends ConsumerWidget {
               color: AppTheme.primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(
-              icon,
-              color: AppTheme.primaryColor,
-              size: 24,
-            ),
+            child: Icon(icon, color: AppTheme.primaryColor, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -267,10 +262,7 @@ class PremiumScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
               ],
             ),
@@ -297,7 +289,9 @@ class PremiumScreen extends ConsumerWidget {
           color: highlighted ? AppTheme.primaryColor : Colors.grey[300]!,
           width: highlighted ? 2 : 1,
         ),
-        color: highlighted ? AppTheme.primaryColor.withOpacity(0.05) : Colors.white,
+        color: highlighted
+            ? AppTheme.primaryColor.withOpacity(0.05)
+            : Colors.white,
       ),
       child: Material(
         color: Colors.transparent,
@@ -310,7 +304,10 @@ class PremiumScreen extends ConsumerWidget {
               children: [
                 if (badge != null) ...[
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(12),
@@ -328,9 +325,9 @@ class PremiumScreen extends ConsumerWidget {
                 ],
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -339,35 +336,38 @@ class PremiumScreen extends ConsumerWidget {
                   children: [
                     Text(
                       price,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppTheme.primaryColor,
                           ),
                     ),
                     Text(
                       period,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                ...features.map((feature) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(Icons.check, color: Colors.green[700], size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              feature,
-                              style: const TextStyle(fontSize: 14),
-                            ),
+                ...features.map(
+                  (feature) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check, color: Colors.green[700], size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            feature,
+                            style: const TextStyle(fontSize: 14),
                           ),
-                        ],
-                      ),
-                    )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
@@ -377,7 +377,9 @@ class PremiumScreen extends ConsumerWidget {
                       backgroundColor: highlighted
                           ? AppTheme.primaryColor
                           : Colors.grey[300],
-                      foregroundColor: highlighted ? Colors.white : Colors.black87,
+                      foregroundColor: highlighted
+                          ? Colors.white
+                          : Colors.black87,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     child: const Text('Subscribe'),

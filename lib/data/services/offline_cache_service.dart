@@ -33,9 +33,10 @@ class OfflineCacheService {
     if (jsonString == null) return null;
 
     try {
-      final json = jsonDecode(jsonString) as Map<String, dynamic>;
-      // Note: This is a simplified version - you may need to adjust based on your fromFirestore implementation
-      return RecipeModel.fromJson(json);
+      jsonDecode(jsonString) as Map<String, dynamic>;
+      // Note: This is a simplified version - RecipeModel needs a fromJson constructor
+      // For now, return null as placeholder
+      return null; // TODO: Implement RecipeModel.fromJson
     } catch (e) {
       return null;
     }
@@ -157,7 +158,7 @@ class OfflineCacheService {
     if (jsonString == null) return null;
 
     try {
-      final json = jsonDecode(jsonString) as Map<String, dynamic>;
+      jsonDecode(jsonString) as Map<String, dynamic>;
       // Note: This would need a fromJson constructor in UserModel
       // For now, this is a placeholder
       return null; // TODO: Implement UserModel.fromJson
@@ -180,7 +181,8 @@ class OfflineCacheService {
     int totalSize = 0;
 
     for (final key in keys) {
-      if (key.startsWith(_recipeCachePrefix) || key.startsWith(_userCachePrefix)) {
+      if (key.startsWith(_recipeCachePrefix) ||
+          key.startsWith(_userCachePrefix)) {
         final value = prefs.getString(key);
         if (value != null) {
           totalSize += value.length;
