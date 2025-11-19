@@ -8,7 +8,6 @@ import 'package:recipe_app/core/constants/app_theme.dart';
 import 'package:recipe_app/data/models/user_model.dart';
 import 'package:recipe_app/data/services/storage_service.dart';
 import 'package:recipe_app/presentation/providers/auth_providers.dart';
-import 'package:recipe_app/presentation/providers/user_providers.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   final UserModel user;
