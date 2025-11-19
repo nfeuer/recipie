@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/core/config/firebase_config.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
+import 'package:recipe_app/presentation/providers/theme_provider.dart';
 import 'package:recipe_app/presentation/screens/splash_screen.dart';
 
 void main() async {
@@ -21,15 +22,19 @@ void main() async {
   );
 }
 
-class RecipeApp extends StatelessWidget {
+class RecipeApp extends ConsumerWidget {
   const RecipeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       title: 'Recipe & Event Platform',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       home: const SplashScreen(),
     );
   }
