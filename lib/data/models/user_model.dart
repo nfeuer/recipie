@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 enum SubscriptionTier {
   free,
@@ -138,6 +139,32 @@ class UserModel {
       subscriptionExpiresAt: subscriptionExpiresAt ?? this.subscriptionExpiresAt,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  // Debug mode test user (only available in debug builds)
+  static UserModel get debugTestUser {
+    if (!kDebugMode) {
+      throw Exception('Debug test user is only available in debug mode');
+    }
+
+    return UserModel(
+      uid: 'debug-test-user-123',
+      email: 'test@example.com',
+      displayName: 'Test User',
+      photoUrl: null,
+      bio: 'This is a test user for development',
+      dietaryPreferences: ['vegetarian', 'gluten-free'],
+      privacySettings: const {
+        'defaultRecipePrivacy': true,
+        'profileVisibility': true,
+      },
+      following: [],
+      followers: [],
+      subscriptionTier: SubscriptionTier.premium,
+      subscriptionExpiresAt: null, // Lifetime premium for testing
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
   }
 }

@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/data/services/auth_service.dart';
+import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/screens/auth/login_screen.dart';
 import 'package:recipe_app/presentation/screens/home/home_screen.dart';
 
@@ -23,6 +25,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     if (!mounted) return;
 
+    // Debug mode bypass - skip login if using debug user
+    if (kDebugMode && kUseDebugUser) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+      );
+      return;
+    }
+
+    // Production mode - check Firebase authentication
     final authService = AuthService();
     final user = authService.currentUser;
 

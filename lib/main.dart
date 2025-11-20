@@ -1,18 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/core/config/firebase_config.dart';
 import 'package:recipe_app/core/constants/app_theme.dart';
+import 'package:recipe_app/presentation/providers/auth_providers.dart';
 import 'package:recipe_app/presentation/providers/theme_provider.dart';
 import 'package:recipe_app/presentation/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  try {
-    await FirebaseConfig.initialize();
-  } catch (e) {
-    debugPrint('Firebase initialization error: $e');
+  // Initialize Firebase (skip if using debug user)
+  if (!kDebugMode || !kUseDebugUser) {
+    try {
+      await FirebaseConfig.initialize();
+    } catch (e) {
+      debugPrint('Firebase initialization error: $e');
+    }
+  } else {
+    debugPrint('🔧 DEBUG MODE: Using test user, Firebase initialization skipped');
   }
 
   runApp(
