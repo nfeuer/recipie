@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,7 +30,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
   final List<RecipeStep> _steps = [];
   final List<String> _selectedDietaryTags = [];
   final List<String> _selectedTags = [];
-  final List<File> _imageFiles = [];
+  final List<XFile> _imageFiles = [];
   RecipePrivacy _privacy = RecipePrivacy.public;
   bool _isLoading = false;
 
@@ -58,7 +59,7 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
 
     if (images.isNotEmpty) {
       setState(() {
-        _imageFiles.addAll(images.map((xfile) => File(xfile.path)));
+        _imageFiles.addAll(images);
       });
     }
   }
@@ -371,12 +372,19 @@ class _CreateRecipeScreenState extends ConsumerState<CreateRecipeScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          _imageFiles[index],
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        ),
+                        child: kIsWeb
+                            ? Image.network(
+                                _imageFiles[index].path,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.file(
+                                File(_imageFiles[index].path),
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                       Positioned(
                         top: 4,
