@@ -1,6 +1,45 @@
-/// Utility class for converting cooking measurement units
+/// Cooking Measurement Unit Conversion Utilities
+///
+/// This file provides comprehensive unit conversion utilities for recipe ingredients.
+/// It supports both volume and weight measurements in metric and US customary systems.
+///
+/// Key features:
+/// - Volume conversions (teaspoons, cups, liters, etc.)
+/// - Weight conversions (grams, ounces, pounds, etc.)
+/// - Automatic unit system detection
+/// - Smart formatting with appropriate precision
+/// - Convenient conversion to metric or US systems
+/// - Amount parsing from various string formats (fractions, decimals, mixed numbers)
+///
+/// Conversion bases:
+/// - Volume: milliliters (mL)
+/// - Weight: grams (g)
+///
+/// Usage:
+/// ```dart
+/// // Convert specific units
+/// final cups = UnitConversion.convertVolume(500, 'ml', 'cup'); // ~2.11 cups
+///
+/// // Auto-detect and convert
+/// final result = UnitConversion.convert(2, 'cup', 'ml'); // 473.176 ml
+///
+/// // Convert to metric system
+/// final metric = UnitConversion.convertToMetric(2, 'cup'); // "473.18 mL"
+/// ```
+
+/// Manages cooking measurement unit conversions between metric and US customary systems.
+///
+/// This class provides conversion utilities for both volume and weight measurements,
+/// supporting common cooking units and providing user-friendly output formatting.
 class UnitConversion {
-  // Volume conversions (to milliliters as base)
+  // -------------------------------------------------------------------------
+  // Volume Conversion Tables
+  // -------------------------------------------------------------------------
+
+  /// Volume unit conversion factors (all relative to milliliters as base unit).
+  ///
+  /// Includes both metric (mL, L) and US customary (tsp, tbsp, cup, etc.) units.
+  /// All values represent how many milliliters one unit equals.
   static const Map<String, double> _volumeToML = {
     // Metric
     'ml': 1.0,
@@ -30,7 +69,14 @@ class UnitConversion {
     'gallons': 3785.41,
   };
 
-  // Weight conversions (to grams as base)
+  // -------------------------------------------------------------------------
+  // Weight Conversion Tables
+  // -------------------------------------------------------------------------
+
+  /// Weight unit conversion factors (all relative to grams as base unit).
+  ///
+  /// Includes both metric (g, kg, mg) and US/Imperial (oz, lb) units.
+  /// All values represent how many grams one unit equals.
   static const Map<String, double> _weightToGrams = {
     // Metric
     'g': 1.0,
@@ -52,7 +98,23 @@ class UnitConversion {
     'pounds': 453.592,
   };
 
-  /// Convert from one volume unit to another
+  // -------------------------------------------------------------------------
+  // Conversion Methods
+  // -------------------------------------------------------------------------
+
+  /// Converts a volume measurement from one unit to another.
+  ///
+  /// [amount] The numeric quantity to convert.
+  /// [fromUnit] The source unit (e.g., "cup", "ml", "tsp").
+  /// [toUnit] The target unit (e.g., "ml", "fl oz", "L").
+  ///
+  /// Returns the converted amount, or null if either unit is not recognized.
+  /// Units are case-insensitive and whitespace is trimmed.
+  ///
+  /// Example:
+  /// ```dart
+  /// final ml = convertVolume(2, 'cup', 'ml'); // 473.176 ml
+  /// ```
   static double? convertVolume(double amount, String fromUnit, String toUnit) {
     final from = fromUnit.toLowerCase().trim();
     final to = toUnit.toLowerCase().trim();
@@ -66,7 +128,19 @@ class UnitConversion {
     return amountInML / toML;
   }
 
-  /// Convert from one weight unit to another
+  /// Converts a weight measurement from one unit to another.
+  ///
+  /// [amount] The numeric quantity to convert.
+  /// [fromUnit] The source unit (e.g., "lb", "g", "oz").
+  /// [toUnit] The target unit (e.g., "g", "kg", "oz").
+  ///
+  /// Returns the converted amount, or null if either unit is not recognized.
+  /// Units are case-insensitive and whitespace is trimmed.
+  ///
+  /// Example:
+  /// ```dart
+  /// final grams = convertWeight(1, 'lb', 'g'); // 453.592 grams
+  /// ```
   static double? convertWeight(double amount, String fromUnit, String toUnit) {
     final from = fromUnit.toLowerCase().trim();
     final to = toUnit.toLowerCase().trim();
@@ -80,7 +154,22 @@ class UnitConversion {
     return amountInGrams / toGrams;
   }
 
-  /// Automatically convert between units (tries both volume and weight)
+  /// Automatically detects unit type and converts between units.
+  ///
+  /// [amount] The numeric quantity to convert.
+  /// [fromUnit] The source unit.
+  /// [toUnit] The target unit.
+  ///
+  /// Returns the converted amount, or null if units are incompatible or not recognized.
+  ///
+  /// This method tries volume conversion first, then weight conversion.
+  /// Use this when you're not sure if the units are volume or weight.
+  ///
+  /// Example:
+  /// ```dart
+  /// final result = convert(2, 'cup', 'ml'); // Works! Returns 473.176
+  /// final invalid = convert(2, 'cup', 'g'); // Returns null (incompatible types)
+  /// ```
   static double? convert(double amount, String fromUnit, String toUnit) {
     // Try volume first
     final volumeResult = convertVolume(amount, fromUnit, toUnit);
@@ -187,9 +276,32 @@ class UnitConversion {
   }
 }
 
-/// Extension on String to make amount parsing easier
+// ============================================================================
+// STRING EXTENSION FOR AMOUNT PARSING
+// ============================================================================
+
+/// Extension on String to parse cooking measurement amounts.
+///
+/// Provides a convenient method to parse various amount formats commonly
+/// used in recipes (fractions, decimals, mixed numbers).
 extension AmountParsing on String {
-  /// Try to parse a string amount like "1/2", "1.5", "2 1/4", etc.
+  /// Parses a string amount into a numeric value.
+  ///
+  /// Supports multiple formats:
+  /// - Simple fractions: "1/2" → 0.5
+  /// - Decimals: "1.5" → 1.5
+  /// - Mixed numbers: "2 1/4" → 2.25
+  /// - Whole numbers: "3" → 3.0
+  ///
+  /// Returns the parsed value, or null if the string cannot be parsed.
+  ///
+  /// Example:
+  /// ```dart
+  /// "1/2".tryParseAmount();     // 0.5
+  /// "2 1/4".tryParseAmount();   // 2.25
+  /// "1.5".tryParseAmount();     // 1.5
+  /// "invalid".tryParseAmount(); // null
+  /// ```
   double? tryParseAmount() {
     final trimmed = trim();
     if (trimmed.isEmpty) return null;
